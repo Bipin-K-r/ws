@@ -1,0 +1,8 @@
+.DS_Store
+.env
+.env.local
+db.sqlite3
+node_modules
+*__pycache__
+.vscode
+

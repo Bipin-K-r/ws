@@ -1,0 +1,11 @@
+asgiref==3.9.1
+channels==4.3.1
+click==8.2.1
+Django==5.2.5
+djangorestframework==3.16.1
+h11==0.16.0
+prometheus_client==0.22.1
+python-json-logger==3.3.0
+sqlparse==0.5.3
+typing_extensions==4.14.1
+uvicorn==0.35.0
