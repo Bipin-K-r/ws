@@ -1,0 +1,59 @@
+version: "3.8"
+
+networks:
+  backend:
+
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: ws_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/upstream.conf:/etc/nginx/conf.d/upstream.conf
+    restart: unless-stopped
+    networks:
+      - backend
+
+  app_blue:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ws_app:blue
+    container_name: ws_app_blue
+    environment:
+      - COLOR=blue
+      - DJANGO_ENV=production
+    restart: unless-stopped
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; \
+        r=urllib.request.urlopen('http://127.0.0.1:8000/health/'); \
+        sys.exit(0 if r.getcode()==200 else 1)"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 1s
+
+  app_green:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ws_app:green
+    container_name: ws_app_green
+    environment:
+      - COLOR=green
+      - DJANGO_ENV=production
+    restart: "no"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; \
+        r=urllib.request.urlopen('http://127.0.0.1:8000/health/'); \
+        sys.exit(0 if r.getcode()==200 else 1)"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 1s
